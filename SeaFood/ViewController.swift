@@ -31,10 +31,40 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
             imageView.image = userPickedImage
             
+            guard let ciimage = CIImage(image: userPickedImage) else {
+                fatalError("Could not convert to CIImage")
+            }
+            
+            detect(image: ciimage)
+            
         }
         
         imagePicker.dismiss(animated: true, completion: nil)
         
+    }
+    
+    func detect(image: CIImage) {
+        //model은 이미지를 분류하는 데 사용
+        guard let model = try? VNCoreMLModel(for: Inceptionv3().model) else {
+            fatalError("Loading CoreML Model Failed.")
+        }
+        
+        let request = VNCoreMLRequest(model: model) { (request, error) in
+            guard let results = request as? [VNClassificationObservation] else {
+                fatalError("Model failed to precess image.")
+            }
+            
+            print(results)
+        }
+        
+        let handler = VNImageRequestHandler(ciImage: image)
+        
+        do {
+        try handler.perform([request])
+        }
+        catch {
+            print(error)
+        }
     }
 
     @IBAction func cameraTapped(_ sender: UIBarButtonItem) {
