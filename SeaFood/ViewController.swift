@@ -54,7 +54,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 fatalError("Model failed to precess image.")
             }
             
-            print(results)
+            if let firstResult = results.first {
+                if firstResult.identifier.contains("hotdog") {// 만약 첫번째 결과가 hotdog를 포함하고 있다면
+                    self.navigationItem.title = "Hotdogs!"
+                } else {
+                    self.navigationItem.title = "Not Hotdog!"
+                }
+                }
         }
         
         let handler = VNImageRequestHandler(ciImage: image)
